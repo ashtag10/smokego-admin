@@ -52,7 +52,7 @@ export default function ReservationDetailPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
-        <Link href="/reservations">
+        <Link href="/dashboard/reservations">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
@@ -68,10 +68,10 @@ export default function ReservationDetailPage() {
               reservation.status === "CONFIRMED"
                 ? "success"
                 : reservation.status === "PENDING"
-                ? "warning"
-                : reservation.status === "COMPLETED"
-                ? "default"
-                : "danger"
+                  ? "warning"
+                  : reservation.status === "COMPLETED"
+                    ? "default"
+                    : "danger"
             }
           >
             {reservation.status}

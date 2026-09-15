@@ -60,7 +60,7 @@ export default function PublishedVideosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-smoke-white">Vidéos publiées</h1>
-        <Link href="/community/new-video">
+        <Link href="/dashboard/community/new-video">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Nouvelle vidéo
@@ -71,7 +71,7 @@ export default function PublishedVideosPage() {
       {(videos ?? []).length === 0 ? (
         <div className="text-center py-16 text-smoke-muted">
           <p className="text-lg">Aucune vidéo publiée</p>
-          <Link href="/community/new-video" className="inline-block mt-4">
+          <Link href="/dashboard/community/new-video" className="inline-block mt-4">
             <Button variant="secondary">Publier une vidéo</Button>
           </Link>
         </div>

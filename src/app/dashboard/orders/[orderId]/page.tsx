@@ -44,7 +44,7 @@ export default function OrderDetailPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <Link href="/orders">
+        <Link href="/dashboard/orders">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
@@ -86,8 +86,8 @@ export default function OrderDetailPage() {
                   order.paymentStatus === "SUCCESS"
                     ? "success"
                     : order.paymentStatus === "FAILED"
-                    ? "danger"
-                    : "warning"
+                      ? "danger"
+                      : "warning"
                 }
               >
                 {order.paymentStatus}

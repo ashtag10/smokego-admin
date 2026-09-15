@@ -35,7 +35,7 @@ export default function LoginPage() {
       // Cookie pour le middleware
       document.cookie = `accessToken=${res.accessToken}; path=/; max-age=900`; // 15min
 
-      router.push("/overview");
+      router.push("/dashboard/overview");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur de connexion");
     } finally {

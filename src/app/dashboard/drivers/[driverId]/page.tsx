@@ -51,7 +51,7 @@ export default function DriverDetailPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <Link href="/drivers">
+        <Link href="/dashboard/drivers">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
@@ -139,8 +139,8 @@ export default function DriverDetailPage() {
                     d.status === "DELIVERED"
                       ? "success"
                       : d.status === "IN_TRANSIT"
-                      ? "default"
-                      : "info"
+                        ? "default"
+                        : "info"
                   }
                 >
                   {d.status}

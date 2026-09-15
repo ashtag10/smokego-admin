@@ -19,9 +19,9 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-   const loadProducts = useCallback(async () => {
+  const loadProducts = useCallback(async () => {
     try {
-      const res: any = await getProducts({ limit: 100 }); 
+      const res: any = await getProducts({ limit: 100 });
       const items = res.products ?? res.data ?? (Array.isArray(res) ? res : []);
       setProducts(Array.isArray(items) ? items : []);
     } catch (err) {
@@ -58,7 +58,7 @@ export default function ProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-smoke-white">Produits</h1>
-        <Link href="/products/new">
+        <Link href="/dashboard/products/new">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Nouveau produit

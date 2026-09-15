@@ -38,7 +38,7 @@ export default function EditProductPage() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
-        <Link href="/products">
+        <Link href="/dashboard/products">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
@@ -51,7 +51,7 @@ export default function EditProductPage() {
         initialData={product}
         onSubmit={async (data) => {
           await updateProduct(productId, data);
-          router.push("/products");
+          router.push("/dashboard/products");
         }}
       />
     </div>

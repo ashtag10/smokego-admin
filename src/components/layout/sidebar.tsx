@@ -33,25 +33,25 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: "/overview", label: "Tableau de bord", icon: LayoutDashboard },
-  { href: "/products", label: "Produits", icon: Package },
-  { href: "/orders", label: "Commandes", icon: ShoppingCart },
-  { href: "/drivers", label: "Livreurs", icon: Truck },
+  { href: "/dashboard/overview", label: "Tableau de bord", icon: LayoutDashboard },
+  { href: "/dashboard/products", label: "Produits", icon: Package },
+  { href: "/dashboard/orders", label: "Commandes", icon: ShoppingCart },
+  { href: "/dashboard/drivers", label: "Livreurs", icon: Truck },
   {
     label: "Communauté",
     icon: Video,
     children: [
-      { href: "/community/moderation-queue", label: "File de modération", icon: FileVideo },
-      { href: "/community/published", label: "Publiées", icon: CheckCircle },
-      { href: "/community/new-video", label: "Nouvelle vidéo", icon: Video },
-      { href: "/community/reports", label: "Signalements", icon: Flag },
+      { href: "/dashboard/community/moderation-queue", label: "File de modération", icon: FileVideo },
+      { href: "/dashboard/community/published", label: "Publiées", icon: CheckCircle },
+      { href: "/dashboard/community/new-video", label: "Nouvelle vidéo", icon: Video },
+      { href: "/dashboard/community/reports", label: "Signalements", icon: Flag },
     ],
   },
-  { href: "/reservations", label: "Réservations", icon: CalendarDays },
-  { href: "/loyalty/vip-settings", label: "Fidélité", icon: Crown },
-  { href: "/zones", label: "Zones", icon: MapPin },
-  { href: "/team", label: "Équipe", icon: Users },
-  { href: "/settings/lounge", label: "Paramètres", icon: Settings },
+  { href: "/dashboard/reservations", label: "Réservations", icon: CalendarDays },
+  { href: "/dashboard/loyalty/vip-settings", label: "Fidélité", icon: Crown },
+  { href: "/dashboard/zones", label: "Zones", icon: MapPin },
+  { href: "/dashboard/team", label: "Équipe", icon: Users },
+  { href: "/dashboard/settings/lounge", label: "Paramètres", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -83,7 +83,7 @@ export function Sidebar() {
     document.cookie = "accessToken=; path=/; max-age=0";
 
     // 4. Rediriger + forcer le middleware à re-évaluer
-    router.push("/login");
+    router.push("/auth/login");
     router.refresh();
   };
 

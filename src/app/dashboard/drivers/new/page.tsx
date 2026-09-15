@@ -32,7 +32,7 @@ export default function NewDriverPage() {
         email: form.email || undefined,
         password: form.password,
       });
-      router.push("/drivers");
+      router.push("/dashboard/drivers");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erreur lors de la création");
     } finally {
@@ -43,7 +43,7 @@ export default function NewDriverPage() {
   return (
     <div className="space-y-6 max-w-xl">
       <div className="flex items-center gap-4">
-        <Link href="/drivers">
+        <Link href="/dashboard/drivers">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour

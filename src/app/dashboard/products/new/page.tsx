@@ -13,7 +13,7 @@ export default function NewProductPage() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
-        <Link href="/products">
+        <Link href="/dashboard/products">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
@@ -25,7 +25,7 @@ export default function NewProductPage() {
       <ProductForm
         onSubmit={async (data) => {
           await createProduct(data);
-          router.push("/products");
+          router.push("/dashboard/products");
         }}
       />
     </div>

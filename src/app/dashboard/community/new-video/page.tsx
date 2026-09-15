@@ -80,7 +80,7 @@ export default function NewVideoPage() {
       });
 
       alert("Vidéo publiée avec succès !");
-      router.push("/community/published");
+      router.push("/dashboard/community/published");
     } catch (err) {
       console.error(err);
       alert("Erreur lors de la publication");
@@ -92,7 +92,7 @@ export default function NewVideoPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
-        <Link href="/community/published">
+        <Link href="/dashboard/community/published">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour

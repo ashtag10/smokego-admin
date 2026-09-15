@@ -42,7 +42,7 @@ export default function TeamPage() {
           <Users className="h-6 w-6 text-smoke-gold" />
           Équipe admin
         </h1>
-        <Link href="/team/audit-log">
+        <Link href="/dashboard/team/audit-log">
           <Button variant="secondary" size="sm">
             <Shield className="h-4 w-4 mr-2" />
             Journal d&apos;audit

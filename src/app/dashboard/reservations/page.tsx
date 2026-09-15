@@ -87,7 +87,7 @@ export default function ReservationsPage() {
             <option value="COMPLETED">Terminées</option>
             <option value="CANCELLED">Annulées</option>
           </select>
-          <Link href="/reservations/settings">
+          <Link href="/dashboard/reservations/settings">
             <Button variant="secondary" size="sm">
               <CalendarDays className="h-4 w-4 mr-2" />
               Paramètres
@@ -126,10 +126,10 @@ export default function ReservationsPage() {
                     res.status === "CONFIRMED"
                       ? "success"
                       : res.status === "PENDING"
-                      ? "warning"
-                      : res.status === "REJECTED" || res.status === "CANCELLED"
-                      ? "danger"
-                      : "default"
+                        ? "warning"
+                        : res.status === "REJECTED" || res.status === "CANCELLED"
+                          ? "danger"
+                          : "default"
                   }
                 >
                   {res.status}

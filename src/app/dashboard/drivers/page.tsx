@@ -22,7 +22,7 @@ export default function DriversPage() {
     loadDrivers();
   }, []);
 
-    async function loadDrivers() {
+  async function loadDrivers() {
     try {
       const res: any = await getDrivers();
       const items = res.users ?? res.drivers ?? res.data ?? (Array.isArray(res) ? res : []);
@@ -57,7 +57,7 @@ export default function DriversPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-smoke-white">Livreurs</h1>
-        <Link href="/drivers/new">
+        <Link href="/dashboard/drivers/new">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
             Nouveau livreur
@@ -75,7 +75,7 @@ export default function DriversPage() {
           <TableHeader className="text-right">Actions</TableHeader>
         </TableHead>
         <TableBody>
-          {(drivers ?? []).map((driver) => ( 
+          {(drivers ?? []).map((driver) => (
             <TableRow key={driver.id}>
               <TableCell>
                 <div className="flex items-center gap-3">
@@ -106,7 +106,7 @@ export default function DriversPage() {
                 </div>
               </TableCell>
               <TableCell>
-                <span className="text-smoke-white">{driver.totalDeliveries ?? 0}</span> 
+                <span className="text-smoke-white">{driver.totalDeliveries ?? 0}</span>
               </TableCell>
               <TableCell>
                 <Badge variant={driver.isActive ? "success" : "danger"}>

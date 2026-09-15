@@ -30,7 +30,7 @@ export default function StockPage() {
     if (!adjustment || !reason) return;
     try {
       await updateStock(productId, parseInt(adjustment), reason);
-      router.push("/products");
+      router.push("/dashboard/products");
     } catch (err) {
       alert("Erreur lors de l&apos;ajustement du stock");
     }
@@ -47,7 +47,7 @@ export default function StockPage() {
   return (
     <div className="space-y-6 max-w-xl">
       <div className="flex items-center gap-4">
-        <Link href="/products">
+        <Link href="/dashboard/products">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour
