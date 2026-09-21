@@ -9,7 +9,8 @@ export interface CreateProductData {
   promoPrice?: number;
   promoStart?: string;
   promoEnd?: string;
-  category: string;
+  categoryId: string;          // NOUVEAU — remplace category dans le formulaire
+  subcategoryId?: string;
   brand?: string;
   images: string[];
   stock: number;

@@ -16,7 +16,9 @@ export interface Product {
   promoPrice: string | null;
   promoStart: string | null;
   promoEnd: string | null;
-  category: ProductCategory;
+  category: ProductCategory; // @deprecated — garder tant que la migration n'est pas finie côté backend
+  categoryId: string | null;       // NOUVEAU — catégorie principale
+  subcategoryId: string | null;
   brand: string | null;
   images: string[];
   stock: number;

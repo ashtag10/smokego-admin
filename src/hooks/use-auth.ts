@@ -16,7 +16,7 @@ export function useAuth() {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     document.cookie = "accessToken=; path=/; max-age=0";
-    router.push("/auth/login");
+    router.push("/login");
   }, [router]);
 
   return { isAuthenticated, isLoading, logout };
