@@ -16,7 +16,9 @@ export default function NewSlidePage() {
     <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-xl font-semibold text-smoke-white">Nouveau slide</h1>
-        <p className="text-sm text-smoke-muted mt-1">Ajoute une image au bandeau de la page d'accueil.</p>
+        <p className="text-sm text-smoke-muted mt-1">
+          Ajoute une image au bandeau de la page d&apos;accueil.
+        </p>
       </div>
 
       <SlideForm onSubmit={handleSubmit} />

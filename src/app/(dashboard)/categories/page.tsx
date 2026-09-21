@@ -43,7 +43,9 @@ export default function CategoriesPage() {
       {!loading && !error && (
         <div className="bg-smoke-card border border-smoke-border rounded-xl overflow-hidden">
           {categories.length === 0 ? (
-            <p className="p-6 text-sm text-smoke-muted">Aucune catégorie pour l'instant.</p>
+            <p className="p-6 text-sm text-smoke-muted">
+              Aucune catégorie pour l&apos;instant.
+            </p>
           ) : (
             <ul className="divide-y divide-smoke-border">
               {categories.map((category) => (

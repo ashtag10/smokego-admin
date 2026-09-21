@@ -17,7 +17,7 @@ export default function NewStoryPage() {
       <div>
         <h1 className="text-xl font-semibold text-smoke-white">Nouvelle story</h1>
         <p className="text-sm text-smoke-muted mt-1">
-          Une story peut contenir plusieurs images/vidéos qui s'enchaînent.
+          Une story peut contenir plusieurs images/vidéos qui s&apos;enchaînent.
         </p>
       </div>
 

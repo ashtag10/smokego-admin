@@ -25,7 +25,7 @@ export default function SlidesPage() {
         <div>
           <h1 className="text-xl font-semibold text-smoke-white">Slides</h1>
           <p className="text-sm text-smoke-muted mt-1">
-            Le bandeau d'images en haut de la page d'accueil.
+            Le bandeau d&apos;images en haut de la page d&apos;accueil.
           </p>
         </div>
 
@@ -43,7 +43,9 @@ export default function SlidesPage() {
       {!loading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {slides.length === 0 && (
-            <p className="text-sm text-smoke-muted col-span-full">Aucun slide pour l'instant.</p>
+            <p className="text-sm text-smoke-muted col-span-full">
+              Aucun slide pour l&apos;instant.
+            </p>
           )}
 
           {slides

@@ -429,7 +429,7 @@ export function ProductForm({
               </span>
 
               <span className="text-xs">
-                Jusqu'à {MAX_IMAGES} images
+               Jusqu&apos;à {MAX_IMAGES} images
               </span>
             </div>
 

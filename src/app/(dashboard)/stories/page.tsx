@@ -43,7 +43,9 @@ export default function StoriesPage() {
       {!loading && !error && (
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
           {stories.length === 0 && (
-            <p className="text-sm text-smoke-muted col-span-full">Aucune story pour l'instant.</p>
+            <p className="text-sm text-smoke-muted col-span-full">
+              Aucune story pour l&apos;instant.
+            </p>
           )}
 
           {stories
