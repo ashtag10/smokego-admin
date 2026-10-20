@@ -1,13 +1,20 @@
+
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { Product } from "@/types/product";
+import type { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CreateProductData } from "@/lib/api/products";
+import type { CreateProductData } from "@/lib/api/products";
 import { apiClient } from "@/lib/api/client";
 import { useCategoryTree } from "@/hooks/use-categories";
 import { Upload, X } from "lucide-react";
+
+type LegacyCategory = "CHICHA" | "SAVEUR" | "ACCESSOIRE" | "PACK";
+
+type ProductFormState = Omit<CreateProductData, "category"> & {
+  subcategoryId?: string;
+};
 
 interface ProductFormProps {
   initialData?: Product;
@@ -17,13 +24,37 @@ interface ProductFormProps {
 const MAX_IMAGES = 5;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
+function normalizeCategory(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "");
+}
+
+function getLegacyCategory(category: {
+  name: string;
+  slug?: string;
+}): LegacyCategory | undefined {
+  const value = normalizeCategory(`${category.slug ?? ""} ${category.name}`);
+
+  if (value.includes("CHICHA")) return "CHICHA";
+  if (value.includes("SAVEUR") || value.includes("FLAVOR")) return "SAVEUR";
+  if (value.includes("ACCESSOIRE") || value.includes("ACCESSORY")) {
+    return "ACCESSOIRE";
+  }
+  if (value.includes("PACK")) return "PACK";
+
+  return undefined;
+}
+
 export function ProductForm({
   initialData,
   onSubmit,
 }: ProductFormProps) {
   const { categories, loading: categoriesLoading } = useCategoryTree();
 
-  const [form, setForm] = useState<CreateProductData>({
+  const [form, setForm] = useState<ProductFormState>({
     name: initialData?.name ?? "",
     description: initialData?.description ?? "",
     price: initialData ? parseFloat(initialData.price) : 0,
@@ -41,26 +72,27 @@ export function ProductForm({
   const [imagePreviews, setImagePreviews] = useState<string[]>(
     initialData?.images ?? [],
   );
-
   const [loading, setLoading] = useState(false);
 
-  function updateField<K extends keyof CreateProductData>(
+  const updateField = <K extends keyof ProductFormState>(
     field: K,
-    value: CreateProductData[K],
-  ) {
+    value: ProductFormState[K],
+  ) => {
     setForm((prev) => ({
       ...prev,
       [field]: value,
     }));
-  }
+  };
 
-  const subcategories = useMemo(() => {
-    const parent = categories.find(
-      (c) => c.id === form.categoryId,
-    );
+  const selectedCategory = useMemo(
+    () => categories.find((category) => category.id === form.categoryId),
+    [categories, form.categoryId],
+  );
 
-    return parent?.children ?? [];
-  }, [categories, form.categoryId]);
+  const subcategories = useMemo(
+    () => selectedCategory?.children ?? [],
+    [selectedCategory],
+  );
 
   const handleImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +100,7 @@ export function ProductForm({
 
       if (!files.length) return;
 
-      const currentCount = imagePreviews.length;
-      const availableSlots = MAX_IMAGES - currentCount;
+      const availableSlots = MAX_IMAGES - imagePreviews.length;
 
       if (availableSlots <= 0) {
         alert(`Vous pouvez ajouter au maximum ${MAX_IMAGES} images.`);
@@ -89,9 +120,7 @@ export function ProductForm({
 
       for (const file of selectedFiles) {
         if (file.size > MAX_FILE_SIZE) {
-          alert(
-            `L'image "${file.name}" est trop volumineuse. Maximum 5 Mo.`,
-          );
+          alert(`L'image "${file.name}" est trop volumineuse. Maximum 5 Mo.`);
           continue;
         }
 
@@ -116,7 +145,6 @@ export function ProductForm({
 
       setImageFiles((prev) => [...prev, ...validFiles]);
       setImagePreviews((prev) => [...prev, ...newPreviews]);
-
       e.target.value = "";
     },
     [imagePreviews.length],
@@ -124,10 +152,9 @@ export function ProductForm({
 
   const removeImage = useCallback(
     (index: number) => {
-      const isExistingImage =
-        index < (initialData?.images?.length ?? 0);
+      const existingImagesCount = initialData?.images?.length ?? 0;
 
-      if (isExistingImage) {
+      if (index < existingImagesCount) {
         const updatedImages = [...form.images];
         updatedImages.splice(index, 1);
 
@@ -136,43 +163,45 @@ export function ProductForm({
 
         setImagePreviews(updatedPreviews);
         updateField("images", updatedImages);
-
         return;
       }
-
-      const existingImagesCount =
-        initialData?.images?.length ?? 0;
 
       const fileIndex = index - existingImagesCount;
 
       if (fileIndex >= 0) {
         const updatedFiles = [...imageFiles];
-        updatedFiles.splice(fileIndex, 1);
-
+        const [removedFile] = updatedFiles.splice(fileIndex, 1);
         setImageFiles(updatedFiles);
+
+        const previewUrl = imagePreviews[index];
+        if (previewUrl?.startsWith("blob:")) {
+          URL.revokeObjectURL(previewUrl);
+        }
       }
 
       const updatedPreviews = [...imagePreviews];
-      const previewUrl = updatedPreviews[index];
-
-      if (previewUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previewUrl);
-      }
-
       updatedPreviews.splice(index, 1);
-
       setImagePreviews(updatedPreviews);
     },
-    [
-      form.images,
-      imageFiles,
-      imagePreviews,
-      initialData?.images,
-    ],
+    [form.images, imageFiles, imagePreviews, initialData?.images],
   );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!form.categoryId || !selectedCategory) {
+      alert("Veuillez sélectionner une catégorie.");
+      return;
+    }
+
+    const category = getLegacyCategory(selectedCategory);
+
+    if (!category) {
+      alert(
+        `La catégorie "${selectedCategory.name}" ne correspond à aucun type accepté par le serveur : CHICHA, SAVEUR, ACCESSOIRE ou PACK. Vérifiez le nom ou le slug de cette catégorie.`,
+      );
+      return;
+    }
 
     if (imagePreviews.length === 0) {
       alert("Veuillez ajouter au moins une image.");
@@ -193,34 +222,37 @@ export function ProductForm({
         const fd = new FormData();
         fd.append("file", file);
 
-        const res = await apiClient.post(
-          "/media/image",
-          fd,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            timeout: 120000,
+        const res = await apiClient.post("/media/image", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
           },
-        );
+          timeout: 120000,
+        });
 
         const imageUrl = res.data?.url;
 
         if (!imageUrl || typeof imageUrl !== "string") {
-          throw new Error(
-            "Le serveur n'a pas retourné l'URL de l'image.",
-          );
+          throw new Error("Le serveur n'a pas retourné l'URL de l'image.");
         }
 
         uploadedUrls.push(imageUrl);
       }
 
-      const finalImages = uploadedUrls.slice(0, MAX_IMAGES);
+      const { subcategoryId, ...formData } = form;
 
       await onSubmit({
-        ...form,
-        images: finalImages,
+        ...formData,
+        category,
+        categoryId: subcategoryId || form.categoryId,
+        images: uploadedUrls.slice(0, MAX_IMAGES),
       });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de l'enregistrement du produit.";
+
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -234,9 +266,7 @@ export function ProductForm({
       <Input
         label="Nom du produit"
         value={form.name}
-        onChange={(e) =>
-          updateField("name", e.target.value)
-        }
+        onChange={(e) => updateField("name", e.target.value)}
         required
       />
 
@@ -244,12 +274,9 @@ export function ProductForm({
         <label className="block text-sm font-medium text-smoke-white mb-1.5">
           Description
         </label>
-
         <textarea
           value={form.description}
-          onChange={(e) =>
-            updateField("description", e.target.value)
-          }
+          onChange={(e) => updateField("description", e.target.value)}
           rows={4}
           className="w-full bg-smoke-card border border-smoke-border rounded-lg px-4 py-2.5 text-sm text-smoke-white placeholder:text-smoke-muted focus:outline-none focus:border-smoke-gold/50 focus:ring-1 focus:ring-smoke-gold/20 resize-none"
           required
@@ -260,26 +287,20 @@ export function ProductForm({
         <Input
           label="Prix (FCFA)"
           type="number"
+          min="0"
           value={form.price}
-          onChange={(e) =>
-            updateField(
-              "price",
-              parseFloat(e.target.value),
-            )
-          }
+          onChange={(e) => updateField("price", Number(e.target.value))}
           required
         />
-
         <Input
           label="Prix promo (optionnel)"
           type="number"
+          min="0"
           value={form.promoPrice ?? ""}
           onChange={(e) =>
             updateField(
               "promoPrice",
-              e.target.value
-                ? parseFloat(e.target.value)
-                : undefined,
+              e.target.value ? Number(e.target.value) : undefined,
             )
           }
         />
@@ -290,29 +311,22 @@ export function ProductForm({
           <label className="block text-sm font-medium text-smoke-white mb-1.5">
             Catégorie
           </label>
-
           <select
             value={form.categoryId}
             onChange={(e) => {
               updateField("categoryId", e.target.value);
-              updateField(
-                "subcategoryId",
-                undefined,
-              );
+              updateField("subcategoryId", undefined);
             }}
             disabled={categoriesLoading}
             className="w-full bg-smoke-card border border-smoke-border rounded-lg px-4 py-2.5 text-sm text-smoke-white focus:outline-none focus:border-smoke-gold/50"
             required
           >
             <option value="" disabled>
-              {categoriesLoading
-                ? "Chargement..."
-                : "Choisir une catégorie"}
+              {categoriesLoading ? "Chargement..." : "Choisir une catégorie"}
             </option>
-
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
               </option>
             ))}
           </select>
@@ -322,19 +336,12 @@ export function ProductForm({
           <label className="block text-sm font-medium text-smoke-white mb-1.5">
             Sous-catégorie
           </label>
-
           <select
             value={form.subcategoryId ?? ""}
             onChange={(e) =>
-              updateField(
-                "subcategoryId",
-                e.target.value || undefined,
-              )
+              updateField("subcategoryId", e.target.value || undefined)
             }
-            disabled={
-              !form.categoryId ||
-              subcategories.length === 0
-            }
+            disabled={!form.categoryId || subcategories.length === 0}
             className="w-full bg-smoke-card border border-smoke-border rounded-lg px-4 py-2.5 text-sm text-smoke-white focus:outline-none focus:border-smoke-gold/50 disabled:opacity-40"
           >
             <option value="">
@@ -342,10 +349,9 @@ export function ProductForm({
                 ? "Aucune sous-catégorie"
                 : "Aucune (optionnel)"}
             </option>
-
-            {subcategories.map((sc) => (
-              <option key={sc.id} value={sc.id}>
-                {sc.name}
+            {subcategories.map((subcategory) => (
+              <option key={subcategory.id} value={subcategory.id}>
+                {subcategory.name}
               </option>
             ))}
           </select>
@@ -354,32 +360,24 @@ export function ProductForm({
 
       <Input
         label="Marque"
-        value={form.brand}
-        onChange={(e) =>
-          updateField("brand", e.target.value)
-        }
+        value={form.brand ?? ""}
+        onChange={(e) => updateField("brand", e.target.value)}
       />
 
       <Input
         label="Stock"
         type="number"
+        min="0"
         value={form.stock}
-        onChange={(e) =>
-          updateField(
-            "stock",
-            parseInt(e.target.value),
-          )
-        }
+        onChange={(e) => updateField("stock", Number(e.target.value))}
         required
       />
 
-      {/* IMAGES */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label className="block text-sm font-medium text-smoke-white">
             Images du produit *
           </label>
-
           <span className="text-xs text-smoke-muted">
             {imagePreviews.length}/{MAX_IMAGES}
           </span>
@@ -398,14 +396,13 @@ export function ProductForm({
                   alt={`Image ${index + 1}`}
                   className="w-full h-full object-contain"
                 />
-
                 <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 text-white text-xs">
                   {index + 1}
                 </div>
-
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
+                  aria-label={`Supprimer l'image ${index + 1}`}
                   className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 text-white hover:bg-black/80 transition-colors"
                 >
                   <X className="h-4 w-4" />
@@ -419,20 +416,12 @@ export function ProductForm({
           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-smoke-border rounded-xl cursor-pointer hover:border-smoke-gold/50 hover:bg-smoke-gold/5 transition-colors">
             <div className="flex flex-col items-center gap-2 text-smoke-muted">
               <Upload className="h-6 w-6" />
-
-              <span className="text-sm">
-                Cliquez pour ajouter des images
-              </span>
-
+              <span className="text-sm">Cliquez pour ajouter des images</span>
+              <span className="text-xs">JPG, PNG, WEBP — max 5 Mo/image</span>
               <span className="text-xs">
-                JPG, PNG, WEBP — max 5 Mo/image
-              </span>
-
-              <span className="text-xs">
-               Jusqu&apos;à {MAX_IMAGES} images
+                Jusqu&apos;à {MAX_IMAGES} images
               </span>
             </div>
-
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
@@ -445,11 +434,7 @@ export function ProductForm({
       </div>
 
       <div className="pt-4">
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={loading}
-        >
+        <Button type="submit" className="w-full" disabled={loading}>
           {loading
             ? "Publication..."
             : initialData

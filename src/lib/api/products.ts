@@ -2,6 +2,7 @@ import { apiClient, handleApiError } from "./client";
 import { Product } from "@/types/product";
 import { PaginatedResponse } from "@/types/common";
 
+
 export interface CreateProductData {
   name: string;
   description: string;
@@ -9,13 +10,18 @@ export interface CreateProductData {
   promoPrice?: number;
   promoStart?: string;
   promoEnd?: string;
-  categoryId: string;          // NOUVEAU — remplace category dans le formulaire
-  subcategoryId?: string;
+  category: "CHICHA" | "SAVEUR" | "ACCESSOIRE" | "PACK";
+  categoryId?: string;
   brand?: string;
   images: string[];
   stock: number;
+  intensity?: "LIGHT" | "MEDIUM" | "STRONG";
+  isFeatured?: boolean;
+  isActive?: boolean;
   variants?: { name: string; price: number; stock: number }[];
+  components?: { productId: string; quantity: number }[];
 }
+
 
 export async function getProducts(params?: {
   category?: string;
